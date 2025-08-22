@@ -43,14 +43,13 @@ This gem provides a Ruby interface to manage Supermicro servers through their BM
 Add to your Gemfile:
 
 ```ruby
-gem 'supermicro', path: './supermicro'
+gem 'supermicro'
 ```
 
 Or install directly:
 
 ```bash
-cd supermicro
-bundle install
+gem install supermicro
 ```
 
 ## Usage
@@ -198,20 +197,27 @@ While the API is similar to the iDRAC gem, there are some Supermicro-specific di
 
 ## Testing
 
-Run the test script:
+Run the test suite:
 
-```ruby
-ruby test_supermicro.rb
+```bash
+bundle exec rspec
 ```
 
-This will verify:
-- Connection and authentication
-- Power management functions
-- System inventory retrieval
-- Storage configuration
-- Virtual media operations
-- Boot configuration
-- Event log access
+Or with specific tests:
+
+```bash
+bundle exec rspec spec/supermicro_spec.rb
+```
+
+## Development
+
+After checking out the repo, run `bundle install` to install dependencies. Then, run `bundle exec rspec` to run the tests.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/buildio/supermicro.
 
 ## License
 
