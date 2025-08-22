@@ -20,7 +20,7 @@ RSpec.describe Supermicro do
     end
 
     it "has a base_url" do
-      expect(client.base_url).to eq('https://192.168.1.100')
+      expect(client.base_url).to eq('https://192.168.1.100:443')
     end
   end
 end
