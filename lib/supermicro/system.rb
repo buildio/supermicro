@@ -246,6 +246,14 @@ module Supermicro
         raise Error, "Failed to get power consumption. Status code: #{response.status}"
       end
     end
+    
+    # TODO: Migrate to standardized radfish interface for uniformity across vendors
+    # Once all vendor gems conform to the same interface, the radfish adapters
+    # can become thin registration layers or be eliminated entirely.
+    def power_consumption_watts
+      data = power_consumption
+      data["consumed_watts"] if data.is_a?(Hash)
+    end
 
     def temperatures
       response = authenticated_request(:get, "/redfish/v1/Chassis/1/Thermal")
