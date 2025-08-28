@@ -25,6 +25,7 @@ module Supermicro
     include Utility
     include License
     include Tasks
+    include Network
 
     def initialize(host:, username:, password:, port: 443, use_ssl: true, verify_ssl: false, direct_mode: false, retry_count: 3, retry_delay: 1, host_header: nil)
       @host = host
