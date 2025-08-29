@@ -34,10 +34,7 @@ module Supermicro
         body = {
           "DHCPv4" => {
             "DHCPEnabled" => true
-          },
-          "IPv4Addresses" => [{
-            "AddressOrigin" => "DHCP"
-          }]
+          }
         }
       else
         puts "Configuring BMC network settings...".yellow
@@ -45,11 +42,10 @@ module Supermicro
         
         # Configure static IP if provided
         if ip_address && subnet_mask
-          body["IPv4Addresses"] = [{
+          body["IPv4StaticAddresses"] = [{
             "Address" => ip_address,
             "SubnetMask" => subnet_mask,
-            "Gateway" => gateway,
-            "AddressOrigin" => "Static"
+            "Gateway" => gateway
           }]
           puts "  IP: #{ip_address}/#{subnet_mask}".cyan
           puts "  Gateway: #{gateway}".cyan if gateway
