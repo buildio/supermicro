@@ -21,6 +21,7 @@ module Supermicro
     include System
     include VirtualMedia
     include Boot
+    include Bios
     include SystemConfig
     include Utility
     include License

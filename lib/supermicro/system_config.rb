@@ -5,81 +5,8 @@ require 'colorize'
 
 module Supermicro
   module SystemConfig
-    def bios_attributes
-      response = authenticated_request(:get, "/redfish/v1/Systems/1/Bios")
-      
-      if response.status == 200
-        begin
-          data = JSON.parse(response.body)
-          
-          {
-            "attributes" => data["Attributes"],
-            "attribute_registry" => data["AttributeRegistry"]
-          }
-        rescue JSON::ParserError
-          raise Error, "Failed to parse BIOS attributes response: #{response.body}"
-        end
-      else
-        raise Error, "Failed to get BIOS attributes. Status code: #{response.status}"
-      end
-    end
-
-    def set_bios_attribute(attribute_name, value)
-      puts "Setting BIOS attribute #{attribute_name} to #{value}...".yellow
-      
-      body = {
-        "Attributes" => {
-          attribute_name => value
-        }
-      }
-      
-      response = authenticated_request(
-        :patch,
-        "/redfish/v1/Systems/1/Bios/Settings",
-        body: body.to_json,
-        headers: { 'Content-Type': 'application/json' }
-      )
-      
-      if response.status.between?(200, 299)
-        puts "BIOS attribute set successfully. Changes will be applied on next reboot.".green
-        return true
-      else
-        raise Error, "Failed to set BIOS attribute: #{response.status} - #{response.body}"
-      end
-    end
-
-    def pending_bios_settings
-      response = authenticated_request(:get, "/redfish/v1/Systems/1/Bios/Settings")
-      
-      if response.status == 200
-        begin
-          data = JSON.parse(response.body)
-          data["Attributes"] || {}
-        rescue JSON::ParserError
-          raise Error, "Failed to parse pending BIOS settings response: #{response.body}"
-        end
-      else
-        {}
-      end
-    end
-
-    def reset_bios_defaults
-      puts "Resetting BIOS to defaults...".yellow
-      
-      response = authenticated_request(
-        :post,
-        "/redfish/v1/Systems/1/Bios/Actions/Bios.ResetBios",
-        body: {}.to_json,
-        headers: { 'Content-Type': 'application/json' }
-      )
-      
-      if response.status.between?(200, 299)
-        puts "BIOS reset to defaults successfully. Changes will be applied on next reboot.".green
-        return true
-      else
-        raise Error, "Failed to reset BIOS: #{response.status} - #{response.body}"
-      end
-    end
+    # BIOS methods have been moved to the Bios module for better organization
+    # Use client.bios_attributes, client.set_bios_attribute, etc. instead
 
     def manager_network_protocol
       response = authenticated_request(:get, "/redfish/v1/Managers/1/NetworkProtocol")

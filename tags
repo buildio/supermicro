@@ -1,0 +1,182 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AuthenticationError	lib/supermicro/error.rb	/^  class AuthenticationError < Error; end$/;"	c	class:Supermicro
+BadRequestError	lib/supermicro/error.rb	/^  class BadRequestError < Error; end$/;"	c	class:Supermicro
+Bios	lib/supermicro/bios.rb	/^  module Bios$/;"	m	class:Supermicro
+Boot	lib/supermicro/boot.rb	/^  module Boot$/;"	m	class:Supermicro
+Client	lib/supermicro/client.rb	/^  class Client$/;"	c	class:Supermicro
+ConnectionError	lib/supermicro/error.rb	/^  class ConnectionError < Error; end$/;"	c	class:Supermicro
+Debuggable	lib/supermicro.rb	/^  module Debuggable$/;"	m	class:Supermicro
+Error	lib/supermicro.rb	/^  class Error < StandardError; end$/;"	c	class:Supermicro
+Error	lib/supermicro/error.rb	/^  class Error < StandardError; end$/;"	c	class:Supermicro
+Jobs	lib/supermicro/jobs.rb	/^  module Jobs$/;"	m	class:Supermicro
+License	lib/supermicro/license.rb	/^  module License$/;"	m	class:Supermicro
+Network	lib/supermicro/network.rb	/^  module Network$/;"	m	class:Supermicro
+NotFoundError	lib/supermicro/error.rb	/^  class NotFoundError < Error; end$/;"	c	class:Supermicro
+Power	lib/supermicro/power.rb	/^  module Power$/;"	m	class:Supermicro
+RedfishFixtures	spec/support/redfish_fixtures.rb	/^module RedfishFixtures$/;"	m
+Session	lib/supermicro/session.rb	/^  class Session$/;"	c	class:Supermicro
+Spinner	lib/supermicro/spinner.rb	/^  class Spinner$/;"	c	class:Supermicro
+SpinnerHelper	lib/supermicro/spinner.rb	/^  module SpinnerHelper$/;"	m	class:Supermicro
+Storage	lib/supermicro/storage.rb	/^  module Storage$/;"	m	class:Supermicro
+Supermicro	lib/supermicro.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/bios.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/boot.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/client.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/error.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/jobs.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/license.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/network.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/power.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/session.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/spinner.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/storage.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/system.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/system_config.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/tasks.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/utility.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/version.rb	/^module Supermicro$/;"	m
+Supermicro	lib/supermicro/virtual_media.rb	/^module Supermicro$/;"	m
+System	lib/supermicro/system.rb	/^  module System$/;"	m	class:Supermicro
+SystemConfig	lib/supermicro/system_config.rb	/^  module SystemConfig$/;"	m	class:Supermicro
+Tasks	lib/supermicro/tasks.rb	/^  module Tasks$/;"	m	class:Supermicro
+TimeoutError	lib/supermicro/error.rb	/^  class TimeoutError < Error; end$/;"	c	class:Supermicro
+Utility	lib/supermicro/utility.rb	/^  module Utility$/;"	m	class:Supermicro
+VirtualMedia	lib/supermicro/virtual_media.rb	/^  module VirtualMedia$/;"	m	class:Supermicro
+_perform_authenticated_request	lib/supermicro/client.rb	/^    def _perform_authenticated_request(method, path, options = {}, retry_count = 0)$/;"	f	class:Supermicro.Client
+_perform_get	lib/supermicro/client.rb	/^    def _perform_get(path:, headers: {})$/;"	f	class:Supermicro.Client
+accounts	lib/supermicro/utility.rb	/^    def accounts$/;"	f
+activate_license	lib/supermicro/license.rb	/^    def activate_license(license_key)$/;"	f	class:Supermicro
+authenticated_request	lib/supermicro/client.rb	/^    def authenticated_request(method, path, body: nil, headers: {}, timeout: nil, open_timeout: nil, **options)$/;"	f	class:Supermicro.Client
+authenticated_request	spec/supermicro/bios_spec.rb	/^      def authenticated_request(method, endpoint, options = {})$/;"	f
+base_url	lib/supermicro/client.rb	/^    def base_url$/;"	f	class:Supermicro.Client
+bios_attributes	lib/supermicro/bios.rb	/^    def bios_attributes$/;"	f	class:Supermicro.Bios
+bios_error_prompt_disabled?	lib/supermicro/bios.rb	/^    def bios_error_prompt_disabled?$/;"	f	class:Supermicro.Bios
+bios_hdd_placeholder_enabled?	lib/supermicro/bios.rb	/^    def bios_hdd_placeholder_enabled?$/;"	f	class:Supermicro.Bios
+bios_os_power_control_enabled?	lib/supermicro/bios.rb	/^    def bios_os_power_control_enabled?$/;"	f	class:Supermicro.Bios
+boot	lib/supermicro/boot.rb	/^    def boot$/;"	f	class:Supermicro
+boot_config	lib/supermicro/boot.rb	/^    def boot_config$/;"	f	class:Supermicro.Boot
+boot_options	lib/supermicro/boot.rb	/^    def boot_options$/;"	f	class:Supermicro
+boot_raw	lib/supermicro/boot.rb	/^    def boot_raw$/;"	f	class:Supermicro
+boot_to_bios_setup	lib/supermicro/boot.rb	/^    def boot_to_bios_setup(enabled: "Once", mode: nil)$/;"	f
+boot_to_cd	lib/supermicro/boot.rb	/^    def boot_to_cd(enabled: "Once", mode: "UEFI")$/;"	f
+boot_to_disk	lib/supermicro/boot.rb	/^    def boot_to_disk(enabled: "Once", mode: nil)$/;"	f
+boot_to_pxe	lib/supermicro/boot.rb	/^    def boot_to_pxe(enabled: "Once", mode: nil)$/;"	f
+boot_to_usb	lib/supermicro/boot.rb	/^    def boot_to_usb(enabled: "Once", mode: nil)$/;"	f
+cancel_job	lib/supermicro/jobs.rb	/^    def cancel_job(job_id)$/;"	f	class:Supermicro.Jobs.jobs_detail
+check_virtual_media_license	lib/supermicro/license.rb	/^    def check_virtual_media_license$/;"	f	class:Supermicro.License
+clear_boot_override	lib/supermicro/boot.rb	/^    def clear_boot_override$/;"	f	class:Supermicro
+clear_jobs!	lib/supermicro/jobs.rb	/^    def clear_jobs!$/;"	f	class:Supermicro.Jobs.jobs_detail
+clear_license	lib/supermicro/license.rb	/^    def clear_license(license_id)$/;"	f	class:Supermicro
+clear_sel_log	lib/supermicro/utility.rb	/^    def clear_sel_log$/;"	f	class:Supermicro
+configure_boot_settings	lib/supermicro/boot.rb	/^    def configure_boot_settings(persistence: nil, mode: nil)$/;"	f	class:Supermicro
+connect	lib/supermicro.rb	/^  def self.connect(**options, &block)$/;"	F	class:Supermicro
+connect	lib/supermicro/client.rb	/^    def self.connect(host:, username:, password:, **options)$/;"	F	class:Supermicro.Client
+connection	lib/supermicro/client.rb	/^    def connection$/;"	f	class:Supermicro.Client
+connection	lib/supermicro/session.rb	/^    def connection$/;"	f	class:Supermicro.Session
+cpus	lib/supermicro/system.rb	/^    def cpus$/;"	f
+create	lib/supermicro/session.rb	/^    def create$/;"	f	class:Supermicro.Session
+create_account	lib/supermicro/utility.rb	/^    def create_account(username:, password:, role: "Administrator")$/;"	f
+debug	lib/supermicro.rb	/^    def debug(message, level = 1, color = :light_cyan)$/;"	f	class:Supermicro.Debuggable
+debug	spec/supermicro/bios_spec.rb	/^      def debug(message, level = 1, color = :white)$/;"	f
+delete	lib/supermicro/session.rb	/^    def delete$/;"	f	class:Supermicro.Session
+delete_account	lib/supermicro/utility.rb	/^    def delete_account(username)$/;"	f
+drives	lib/supermicro/storage.rb	/^    def drives$/;"	f	class:Supermicro.Storage
+eject_virtual_media	lib/supermicro/virtual_media.rb	/^    def eject_virtual_media(device: nil)$/;"	f	class:Supermicro
+ensure_sensible_bios!	lib/supermicro/bios.rb	/^    def ensure_sensible_bios!(options = {})$/;"	f	class:Supermicro.Bios
+ensure_uefi_boot	lib/supermicro/bios.rb	/^    def ensure_uefi_boot$/;"	f	class:Supermicro.Bios
+fans	lib/supermicro/system.rb	/^    def fans$/;"	f	class:Supermicro
+fetch_controller_drives	lib/supermicro/storage.rb	/^    def fetch_controller_drives(controller_id, drive_refs)$/;"	f	class:Supermicro.Storage
+finalizer	lib/supermicro/client.rb	/^    def self.finalizer(session)$/;"	F	class:Supermicro.Client
+find_best_virtual_media_device	lib/supermicro/virtual_media.rb	/^    def find_best_virtual_media_device$/;"	f
+get	lib/supermicro/client.rb	/^    def get(path:, headers: {})$/;"	f	class:Supermicro.Client
+get_bios_attributes	lib/supermicro/bios.rb	/^    def get_bios_attributes$/;"	f	class:Supermicro.Bios
+get_bmc_network	lib/supermicro/network.rb	/^    def get_bmc_network$/;"	f	class:Supermicro.Network
+get_boot_devices	lib/supermicro/boot.rb	/^    def get_boot_devices$/;"	f
+get_firmware_version	lib/supermicro/client.rb	/^    def get_firmware_version$/;"	f	class:Supermicro.Client
+handle_auth_failure	lib/supermicro/client.rb	/^    def handle_auth_failure(method, path, options, retry_count)$/;"	f	class:Supermicro.Client
+handle_connection_error	lib/supermicro/client.rb	/^    def handle_connection_error(error, method, path, options, retry_count)$/;"	f	class:Supermicro.Client
+handle_general_error	lib/supermicro/client.rb	/^    def handle_general_error(error, method, path, options, retry_count)$/;"	f	class:Supermicro.Client
+handle_location	lib/supermicro/client.rb	/^    def handle_location(location)$/;"	f	class:Supermicro.Client
+handle_response	lib/supermicro/client.rb	/^    def handle_response(response)$/;"	f	class:Supermicro.Client
+initialize	lib/supermicro/client.rb	/^    def initialize(host:, username:, password:, port: 443, use_ssl: true, verify_ssl: false, direct_mode: false, retry_count: 3, retry_delay: 1, host_header: nil)$/;"	f	class:Supermicro.Client
+initialize	lib/supermicro/session.rb	/^    def initialize(client)$/;"	f	class:Supermicro.Session
+initialize	lib/supermicro/spinner.rb	/^    def initialize(message = "Working", type: :dots, color: :cyan)$/;"	f	class:Supermicro.Spinner
+insert_virtual_media	lib/supermicro/virtual_media.rb	/^    def insert_virtual_media(iso_url, device: nil)$/;"	f
+job_status	lib/supermicro/jobs.rb	/^    def job_status(job_id)$/;"	f	class:Supermicro.Jobs.jobs_detail
+jobs	lib/supermicro/jobs.rb	/^    def jobs$/;"	f	class:Supermicro.Jobs
+jobs_detail	lib/supermicro/jobs.rb	/^    def jobs_detail$/;"	f	class:Supermicro.Jobs
+jobs_summary	lib/supermicro/jobs.rb	/^    def jobs_summary$/;"	f	class:Supermicro.Jobs.jobs_detail
+licenses	lib/supermicro/license.rb	/^    def licenses$/;"	f	class:Supermicro
+load_fixture	spec/support/redfish_fixtures.rb	/^  def load_fixture(fixture_name)$/;"	f	class:RedfishFixtures
+login	lib/supermicro/client.rb	/^    def login$/;"	f	class:Supermicro.Client
+logout	lib/supermicro/client.rb	/^    def logout$/;"	f	class:Supermicro.Client
+make_request_with_timeouts	lib/supermicro/client.rb	/^    def make_request_with_timeouts(method, path, body, headers, timeout, open_timeout)$/;"	f	class:Supermicro.Client
+manager_info	lib/supermicro/system_config.rb	/^    def manager_info$/;"	f	class:Supermicro
+manager_network_protocol	lib/supermicro/system_config.rb	/^    def manager_network_protocol$/;"	f	class:Supermicro.SystemConfig
+memory	lib/supermicro/system.rb	/^    def memory$/;"	f	class:Supermicro.System
+mock_redfish_response	spec/support/redfish_fixtures.rb	/^  def mock_redfish_response(fixture_name, status: 200)$/;"	f	class:RedfishFixtures
+mount_iso_and_boot	lib/supermicro/virtual_media.rb	/^    def mount_iso_and_boot(iso_url, device: nil)$/;"	f
+new	lib/supermicro.rb	/^  def self.new(options = {})$/;"	F	class:Supermicro
+nics	lib/supermicro/system.rb	/^    def nics$/;"	f
+parse_log_entries	lib/supermicro/utility.rb	/^    def parse_log_entries(response)$/;"	f	class:Supermicro.Utility
+pending_bios_settings	lib/supermicro/bios.rb	/^    def pending_bios_settings$/;"	f	class:Supermicro.Bios
+poll_task	lib/supermicro/tasks.rb	/^    def poll_task(task_location, timeout: 30, show_progress: true)$/;"	f	class:Supermicro.Tasks
+power_consumption	lib/supermicro/system.rb	/^    def power_consumption$/;"	f
+power_consumption_watts	lib/supermicro/system.rb	/^    def power_consumption_watts$/;"	f
+power_cycle	lib/supermicro/power.rb	/^    def power_cycle$/;"	f	class:Supermicro.Power
+power_off	lib/supermicro/power.rb	/^    def power_off(force: false)$/;"	f	class:Supermicro.Power
+power_on	lib/supermicro/power.rb	/^    def power_on$/;"	f	class:Supermicro.Power
+power_restart	lib/supermicro/power.rb	/^    def power_restart(force: false)$/;"	f	class:Supermicro.Power
+power_status	lib/supermicro/power.rb	/^    def power_status$/;"	f	class:Supermicro.Power
+psus	lib/supermicro/system.rb	/^    def psus$/;"	f	class:Supermicro.System
+redfish_version	lib/supermicro/client.rb	/^    def redfish_version$/;"	f	class:Supermicro.Client
+render	lib/supermicro/spinner.rb	/^    def render$/;"	f	class:Supermicro.Spinner
+reset_bios_defaults	lib/supermicro/bios.rb	/^    def reset_bios_defaults$/;"	f	class:Supermicro.Bios
+reset_manager	lib/supermicro/system_config.rb	/^    def reset_manager$/;"	f	class:Supermicro
+reset_type_allowed	lib/supermicro/power.rb	/^    def reset_type_allowed$/;"	f	class:Supermicro.Power
+sel_log	lib/supermicro/utility.rb	/^    def sel_log$/;"	f	class:Supermicro.Utility
+sel_summary	lib/supermicro/utility.rb	/^    def sel_summary(limit: 10)$/;"	f	class:Supermicro
+service_info	lib/supermicro/utility.rb	/^    def service_info$/;"	f
+sessions	lib/supermicro/utility.rb	/^    def sessions$/;"	f
+set_bios_attribute	lib/supermicro/bios.rb	/^    def set_bios_attribute(attribute_name, value)$/;"	f	class:Supermicro.Bios
+set_bios_error_prompt	lib/supermicro/bios.rb	/^    def set_bios_error_prompt(disabled: true)$/;"	f	class:Supermicro.Bios
+set_bios_os_power_control	lib/supermicro/bios.rb	/^    def set_bios_os_power_control(enabled: true)$/;"	f	class:Supermicro.Bios
+set_bmc_dhcp	lib/supermicro/network.rb	/^    def set_bmc_dhcp$/;"	f	class:Supermicro.Network
+set_bmc_network	lib/supermicro/network.rb	/^    def set_bmc_network(ipv4: nil, mask: nil, gateway: nil, $/;"	f	class:Supermicro.Network
+set_boot_order	lib/supermicro/boot.rb	/^    def set_boot_order(devices)$/;"	f	class:Supermicro
+set_boot_order_hd_first	lib/supermicro/boot.rb	/^    def set_boot_order_hd_first$/;"	f
+set_boot_override	lib/supermicro/boot.rb	/^    def set_boot_override(target, enabled: "Once", mode: nil)$/;"	f	class:Supermicro
+set_manager_datetime	lib/supermicro/system_config.rb	/^    def set_manager_datetime(datetime_str)$/;"	f	class:Supermicro
+set_network_protocol	lib/supermicro/system_config.rb	/^    def set_network_protocol(protocol, enabled:, port: nil)$/;"	f	class:Supermicro
+set_one_time_boot_to_virtual_media	lib/supermicro/boot.rb	/^    def set_one_time_boot_to_virtual_media$/;"	f
+show_progress	lib/supermicro/spinner.rb	/^    def show_progress(message, duration: nil, &block)$/;"	f	class:Supermicro.SpinnerHelper
+start	lib/supermicro/spinner.rb	/^    def start$/;"	f	class:Supermicro.Spinner
+stop	lib/supermicro/spinner.rb	/^    def stop(final_message = nil, success: true)$/;"	f	class:Supermicro.Spinner
+storage_controllers	lib/supermicro/storage.rb	/^    def storage_controllers$/;"	f	class:Supermicro.Storage
+storage_summary	lib/supermicro/storage.rb	/^    def storage_summary$/;"	f
+system_health	lib/supermicro/system.rb	/^    def system_health$/;"	f
+system_info	lib/supermicro/system.rb	/^    def system_info$/;"	f
+temperatures	lib/supermicro/system.rb	/^    def temperatures$/;"	f
+test_iso_accessibility	lib/supermicro/virtual_media.rb	/^    def test_iso_accessibility(iso_url)$/;"	f
+unmount_all_media	lib/supermicro/virtual_media.rb	/^    def unmount_all_media$/;"	f
+update	lib/supermicro/spinner.rb	/^    def update(message)$/;"	f	class:Supermicro.Spinner
+update_account_password	lib/supermicro/utility.rb	/^    def update_account_password(username:, new_password:)$/;"	f
+valid?	lib/supermicro/session.rb	/^    def valid?$/;"	f	class:Supermicro.Session
+verbosity	lib/supermicro/session.rb	/^    def verbosity$/;"	f	class:Supermicro.Session
+verify_bmc_on_new_ip	lib/supermicro/network.rb	/^    def verify_bmc_on_new_ip(new_ip, username, password, retries: 10, delay: 3)$/;"	f	class:Supermicro.Network
+virtual_media	lib/supermicro/virtual_media.rb	/^    def virtual_media$/;"	f	class:Supermicro.VirtualMedia
+virtual_media_status	lib/supermicro/virtual_media.rb	/^    def virtual_media_status$/;"	f
+volumes	lib/supermicro/storage.rb	/^    def volumes$/;"	f	class:Supermicro
+wait_for_job	lib/supermicro/jobs.rb	/^    def wait_for_job(job_id, timeout: 600)$/;"	f	class:Supermicro.Jobs.jobs_detail
+wait_for_network_job	lib/supermicro/network.rb	/^    def wait_for_network_job(job_uri, timeout: 60)$/;"	f	class:Supermicro.Network
+wait_for_task	lib/supermicro/client.rb	/^    def wait_for_task(task_id)$/;"	f	class:Supermicro.Client
+wait_for_task_completion	lib/supermicro/tasks.rb	/^    def wait_for_task_completion(response, timeout: 30)$/;"	f	class:Supermicro.Tasks
+with_progress_bar	lib/supermicro/spinner.rb	/^    def with_progress_bar(message, duration, &block)$/;"	f	class:Supermicro.SpinnerHelper
+with_retries	lib/supermicro/client.rb	/^    def with_retries(max_retries = nil, initial_delay = nil, error_classes = nil)$/;"	f	class:Supermicro.Client
+with_spinner	lib/supermicro/spinner.rb	/^    def with_spinner$/;"	f	class:Supermicro.Spinner
+with_spinner	lib/supermicro/spinner.rb	/^    def with_spinner(message, type: :dots, color: :cyan, &block)$/;"	f	class:Supermicro.SpinnerHelper

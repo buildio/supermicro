@@ -6,28 +6,49 @@ require 'colorize'
 module Supermicro
   module Jobs
     def jobs
-      response = authenticated_request(:get, "/redfish/v1/TaskService/Tasks?$expand=*($levels=1)")
+      tasks = jobs_detail
+      
+      # Return summary format consistent with iDRAC
+      {
+        completed_count: tasks.count { |t| t["state"] == "Completed" },
+        incomplete_count: tasks.count { |t| t["state"] != "Completed" },
+        total_count: tasks.count
+      }
+    end
+    
+    def jobs_detail
+      response = authenticated_request(:get, "/redfish/v1/TaskService/Tasks")
       
       if response.status == 200
         begin
           data = JSON.parse(response.body)
+          members = data["Members"] || []
           
-          tasks = data["Members"]&.map do |task|
-            {
-              "id" => task["Id"],
-              "name" => task["Name"],
-              "state" => task["TaskState"],
-              "status" => task["TaskStatus"],
-              "percent_complete" => task["PercentComplete"] || task.dig("Oem", "Supermicro", "PercentComplete"),
-              "start_time" => task["StartTime"],
-              "end_time" => task["EndTime"],
-              "messages" => task["Messages"]
-            }
-          end || []
+          # Supermicro doesn't support expand, so fetch each task individually
+          tasks = members.map do |member|
+            task_id = member["@odata.id"].split('/').last
+            task_response = authenticated_request(:get, member["@odata.id"])
+            
+            if task_response.status == 200
+              task = JSON.parse(task_response.body)
+              {
+                "id" => task["Id"],
+                "name" => task["Name"],
+                "state" => task["TaskState"],
+                "status" => task["TaskStatus"],
+                "percent_complete" => task["PercentComplete"],
+                "start_time" => task["StartTime"],
+                "end_time" => task["EndTime"],
+                "messages" => task["Messages"]
+              }
+            else
+              nil
+            end
+          end.compact
           
           return tasks
         rescue JSON::ParserError
-          raise Error, "Failed to parse tasks response: #{response.body}"
+          raise Error, "Failed to parse tasks response"
         end
       else
         []
@@ -116,42 +137,49 @@ module Supermicro
       end
     end
 
-    def clear_completed_jobs
-      all_jobs = jobs
-      completed = all_jobs.select { |j| j["state"] == "Completed" }
+    def clear_jobs!
+      # Note: Supermicro doesn't actually delete tasks - DELETE just marks them as "Killed"
+      # The BMC maintains a rolling buffer of tasks (typically ~28-30) with oldest being overwritten
+      # This method will "kill" any running tasks but won't remove them from the list
       
-      if completed.empty?
-        puts "No completed jobs to clear.".yellow
+      response = authenticated_request(:get, "/redfish/v1/TaskService/Tasks")
+      return true unless response.status == 200
+      
+      data = JSON.parse(response.body)
+      members = data["Members"] || []
+      
+      if members.empty?
+        puts "No jobs to clear.".yellow
         return true
       end
       
-      puts "Clearing #{completed.length} completed jobs...".yellow
-      
-      success = true
-      completed.each do |job|
-        begin
-          response = authenticated_request(
-            :delete,
-            "/redfish/v1/TaskService/Tasks/#{job["id"]}"
-          )
-          
-          if response.status.between?(200, 299)
-            puts "  Cleared: #{job["name"]} (#{job["id"]})".green
-          else
-            puts "  Failed to clear: #{job["name"]} (#{job["id"]})".red
-            success = false
+      # Only try to kill tasks that are actually running
+      running_count = 0
+      members.each do |member|
+        task_id = member["@odata.id"].split('/').last
+        task_response = authenticated_request(:get, member["@odata.id"])
+        
+        if task_response.status == 200
+          task = JSON.parse(task_response.body)
+          if ["Running", "Starting", "New", "Pending"].include?(task["TaskState"])
+            running_count += 1
+            puts "Killing task #{task_id}: #{task['Name']} (#{task['TaskState']})".yellow
+            authenticated_request(:delete, member["@odata.id"])
           end
-        rescue => e
-          puts "  Error clearing #{job["id"]}: #{e.message}".red
-          success = false
         end
       end
       
-      success
+      if running_count > 0
+        puts "Killed #{running_count} running tasks.".green
+      else
+        puts "No running tasks to kill (#{members.length} completed/killed tasks remain in history).".yellow
+      end
+      
+      true
     end
 
     def jobs_summary
-      all_jobs = jobs
+      all_jobs = jobs_detail
       
       puts "\n=== Jobs Summary ===".green
       

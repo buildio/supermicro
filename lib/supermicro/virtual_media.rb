@@ -155,6 +155,7 @@ module Supermicro
       
       tries = 0
       max_tries = 3
+      last_error = nil
       
       while tries < max_tries
         begin
@@ -233,21 +234,26 @@ module Supermicro
                 inserted_media = current_media.find { |m| m[:device] == device }
                 if inserted_media && inserted_media[:image] == iso_url
                   if inserted_media[:connected_via] == "NotConnected"
-                    debug "ERROR: Media mounted but NOT CONNECTED!", 1, :red
-                    debug "The ISO will NOT boot! ConnectedVia must be 'URI', not 'NotConnected'.", 1, :red
-                    return false
+                    error_msg = "Media mounted but NOT CONNECTED! The ISO will NOT boot! ConnectedVia must be 'URI', not 'NotConnected'."
+                    debug "ERROR: #{error_msg}", 1, :red
+                    raise Error, error_msg
                   else
                     debug "Media mounted with status: #{inserted_media[:connected_via]}", 1, :green
                     return true
                   end
                 else
-                  debug "Failed to verify media mount.", 1, :red
-                  return false
+                  error_msg = "Failed to verify media mount - media not found on device #{device}"
+                  debug error_msg, 1, :red
+                  raise Error, error_msg
                 end
               end
             else
               debug "Task failed or timed out", 1, :red
-              return false
+              last_error = task_result[:error] || "Task failed with unknown error"
+              debug "Task error details: #{last_error}", 1, :red
+              tries += 1
+              sleep 2
+              next
             end
           elsif response.status.between?(200, 299)
             # Synchronous success (rare)
@@ -261,14 +267,16 @@ module Supermicro
                 debug "✓ Media connected via URI", 1, :green
                 return true
               elsif inserted_media[:connected_via] == "NotConnected"
-                debug "WARNING: Media mounted but not connected!", 1, :red
-                return false
+                error_msg = "Media mounted but not connected! ConnectedVia is 'NotConnected' - ISO will not boot"
+                debug "ERROR: #{error_msg}", 1, :red
+                raise Error, error_msg
               else
                 debug "Media mounted with status: #{inserted_media[:connected_via]}", 1, :yellow
                 return true
               end
             else
-              debug "Could not verify media mount", 1, :yellow
+              # If we can't verify, still treat as success but log warning
+              debug "WARNING: Could not verify media mount status", 1, :yellow
               return true
             end
           elsif response.status == 400 && response.body.include?("already")
@@ -278,19 +286,54 @@ module Supermicro
             tries += 1
           else
             debug "Failed to insert media: #{response.status} - #{response.body}", 1, :red
+            last_error = "HTTP #{response.status}: #{response.body}"
             tries += 1
             sleep 2
           end
         rescue => e
           debug "Error inserting media: #{e.message}", 1, :red
+          last_error = e.message
           tries += 1
           sleep 2
         end
       end
       
-      raise Error, "Failed to insert virtual media after #{max_tries} attempts"
+      error_msg = "Failed to insert virtual media after #{max_tries} attempts"
+      error_msg += ": #{last_error}" if last_error
+      raise Error, error_msg
     end
 
+    def test_iso_accessibility(iso_url)
+      debug "Testing if BMC can reach ISO URL: #{iso_url}", 1, :yellow
+      
+      # Try to use Redfish's built-in validation if available
+      path = "/redfish/v1/Managers/1/VirtualMedia/test"
+      body = {
+        "Image" => iso_url,
+        "TestOnly" => true
+      }
+      
+      begin
+        response = authenticated_request(
+          :post,
+          path,
+          body: body.to_json,
+          headers: { 'Content-Type': 'application/json' }
+        )
+        
+        if response.status == 200
+          debug "✓ BMC can reach ISO URL", 1, :green
+          return true
+        else
+          debug "✗ BMC cannot reach ISO URL: #{response.body}", 1, :red
+          return false
+        end
+      rescue => e
+        debug "Cannot test ISO accessibility: #{e.message}", 2, :yellow
+        return nil
+      end
+    end
+    
     def find_best_virtual_media_device
       media_list = virtual_media
       

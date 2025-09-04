@@ -61,6 +61,37 @@ module Supermicro
               sleep 1
               next
             end
+          elsif task_response.status == 404
+            # TaskMonitor endpoint not found - this is an error
+            spinner&.stop("Task endpoint not found", success: false)
+            debug "Task endpoint returned 404 - cannot monitor task", 1, :red
+            return { success: false, error: 'task_endpoint_not_found' }
+          elsif task_response.status == 400
+            # 400 can indicate task completion with error details in body
+            begin
+              if task_response.body && !task_response.body.empty?
+                task_info = JSON.parse(task_response.body)
+                
+                # Check if this is a completed task with error
+                if task_info['TaskState'] == 'Exception'
+                  spinner&.stop("Task failed: #{task_info['Message']}", success: false)
+                  debug "✗ Task failed: #{task_info['Message']}", 1, :red
+                  return { success: false, task: task_info, error: task_info['Message'] }
+                elsif task_info['TaskState'] == 'Completed'
+                  spinner&.stop("Task completed", success: true)
+                  debug "✓ Task completed", 2, :green
+                  return { success: true, task: task_info }
+                else
+                  # Unknown 400 response
+                  debug "Unexpected 400 response with TaskState: #{task_info['TaskState']}", 2, :yellow
+                  sleep 1
+                  next
+                end
+              end
+            rescue JSON::ParserError
+              debug "400 response but couldn't parse body: #{task_response.body}", 1, :red
+              return { success: false, error: 'bad_request' }
+            end
           else
             debug "Unexpected task response: #{task_response.status}", 2, :yellow
             sleep 1
@@ -121,7 +152,14 @@ module Supermicro
       if !task_location && response.body && !response.body.empty?
         begin
           task_data = JSON.parse(response.body)
-          task_location = task_data['@odata.id'] || task_data['TaskMonitor']
+          # Prefer @odata.id over TaskMonitor as TaskMonitor may return 404
+          task_location = task_data['@odata.id']
+          
+          # Only use TaskMonitor if @odata.id is not available
+          if !task_location && task_data['TaskMonitor']
+            debug "Using TaskMonitor endpoint (may not be supported): #{task_data['TaskMonitor']}", 2, :yellow
+            task_location = task_data['TaskMonitor']
+          end
         rescue JSON::ParserError
           # No task info in body
         end

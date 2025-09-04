@@ -6,14 +6,28 @@ require 'colorize'
 module Supermicro
   module Storage
     def storage_controllers
-      response = authenticated_request(:get, "/redfish/v1/Systems/1/Storage?$expand=*($levels=1)")
+      response = authenticated_request(:get, "/redfish/v1/Systems/1/Storage")
       
       if response.status == 200
         begin
           data = JSON.parse(response.body)
           
-          controllers = data["Members"].map do |controller|
-            {
+          controllers = data["Members"].map do |member|
+            # If member is just a reference, fetch the full data
+            if member["@odata.id"] && !member["Id"]
+              controller_path = member["@odata.id"]
+              controller_response = authenticated_request(:get, controller_path)
+              
+              if controller_response.status == 200
+                controller = JSON.parse(controller_response.body)
+              else
+                next nil
+              end
+            else
+              controller = member
+            end
+            
+            controller_data = {
               "id" => controller["Id"],
               "name" => controller["Name"],
               "status" => controller.dig("Status", "Health") || "N/A",
@@ -28,7 +42,16 @@ module Supermicro
                 }
               }
             }
-          end
+            
+            # Fetch drives for this controller
+            if controller["Drives"] && !controller["Drives"].empty?
+              controller_data["drives"] = fetch_controller_drives(controller["Id"], controller["Drives"])
+            else
+              controller_data["drives"] = []
+            end
+            
+            controller_data
+          end.compact
           
           return controllers
         rescue JSON::ParserError
@@ -38,6 +61,43 @@ module Supermicro
         raise Error, "Failed to get storage controllers. Status code: #{response.status}"
       end
     end
+    
+    private
+    
+    def fetch_controller_drives(controller_id, drive_refs)
+      drives = []
+      
+      drive_refs.each do |drive_ref|
+        drive_path = drive_ref["@odata.id"]
+        drive_response = authenticated_request(:get, drive_path)
+        
+        if drive_response.status == 200
+          drive_data = JSON.parse(drive_response.body)
+          
+          drives << {
+            "id" => drive_data["Id"],
+            "name" => drive_data["Name"],
+            "serial" => drive_data["SerialNumber"],
+            "manufacturer" => drive_data["Manufacturer"],
+            "model" => drive_data["Model"],
+            "revision" => drive_data["Revision"],
+            "capacity_bytes" => drive_data["CapacityBytes"],
+            "speed_gbps" => drive_data["CapableSpeedGbs"] || drive_data["NegotiatedSpeedGbs"],
+            "rotation_speed_rpm" => drive_data["RotationSpeedRPM"],
+            "media_type" => drive_data["MediaType"],
+            "protocol" => drive_data["Protocol"],
+            "health" => drive_data.dig("Status", "Health") || "N/A",
+            "temperature_celsius" => drive_data.dig("Oem", "Supermicro", "Temperature"),
+            "failure_predicted" => drive_data["FailurePredicted"],
+            "life_left_percent" => drive_data["PredictedMediaLifeLeftPercent"]
+          }
+        end
+      end
+      
+      drives
+    end
+    
+    public
 
     def drives
       all_drives = []
@@ -64,18 +124,20 @@ module Supermicro
                   all_drives << {
                     "id" => drive_data["Id"],
                     "name" => drive_data["Name"],
+                    "serial" => drive_data["SerialNumber"],
                     "manufacturer" => drive_data["Manufacturer"],
                     "model" => drive_data["Model"],
-                    "serial" => drive_data["SerialNumber"],
+                    "revision" => drive_data["Revision"],
                     "capacity_bytes" => drive_data["CapacityBytes"],
-                    "capacity_gb" => (drive_data["CapacityBytes"].to_f / 1_000_000_000).round(2),
-                    "protocol" => drive_data["Protocol"],
-                    "media_type" => drive_data["MediaType"],
-                    "status" => drive_data.dig("Status", "Health") || "N/A",
-                    "controller" => controller_id,
-                    "firmware_version" => drive_data["Revision"],
+                    "speed_gbps" => drive_data["CapableSpeedGbs"] || drive_data["NegotiatedSpeedGbs"],
                     "rotation_speed_rpm" => drive_data["RotationSpeedRPM"],
-                    "predicted_media_life_left_percent" => drive_data["PredictedMediaLifeLeftPercent"]
+                    "media_type" => drive_data["MediaType"],
+                    "protocol" => drive_data["Protocol"],
+                    "health" => drive_data.dig("Status", "Health") || "N/A",
+                    "temperature_celsius" => drive_data.dig("Oem", "Supermicro", "Temperature"),
+                    "failure_predicted" => drive_data["FailurePredicted"],
+                    "life_left_percent" => drive_data["PredictedMediaLifeLeftPercent"],
+                    "controller" => controller_id
                   }
                 end
               end
@@ -97,7 +159,7 @@ module Supermicro
       controllers.each do |controller|
         controller_id = controller["id"]
         
-        response = authenticated_request(:get, "/redfish/v1/Systems/1/Storage/#{controller_id}/Volumes?$expand=*($levels=1)")
+        response = authenticated_request(:get, "/redfish/v1/Systems/1/Storage/#{controller_id}/Volumes")
         
         if response.status == 200
           begin
