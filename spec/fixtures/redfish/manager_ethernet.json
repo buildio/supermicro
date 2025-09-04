@@ -1,0 +1,115 @@
+{
+  "@odata.type": "#EthernetInterface.v1_6_3.EthernetInterface",
+  "@odata.id": "/redfish/v1/Managers/1/EthernetInterfaces/1",
+  "Id": "1",
+  "Name": "Manager Ethernet Interface",
+  "Description": "Management Network Interface",
+  "Status": {
+    "State": "Enabled",
+    "Health": "OK"
+  },
+  "InterfaceEnabled": true,
+  "LinkStatus": "LinkUp",
+  "MACAddress": "00:11:22:33:44:55",
+  "SpeedMbps": 1000,
+  "SpeedMbps@Redfish.AllowableValues": [
+    "100",
+    "1000"
+  ],
+  "AutoNeg": true,
+  "FullDuplex": true,
+  "MTUSize": 1500,
+  "HostName": "test-bmc",
+  "FQDN": "test-bmc.example.com",
+  "MaxIPv6StaticAddresses": 5,
+  "VLAN": {
+    "VLANEnable": false,
+    "VLANId": 1
+  },
+  "DHCPv4": {
+    "DHCPEnabled": false,
+    "UseDNSServers": false,
+    "UseGateway": false,
+    "UseNTPServers": false,
+    "UseStaticRoutes": false,
+    "UseDomainName": false,
+    "FallbackAddress": "None"
+  },
+  "DHCPv6": {
+    "OperatingMode": "Stateless",
+    "UseDNSServers": true,
+    "UseDomainName": false,
+    "UseNTPServers": false,
+    "UseRapidCommit": false
+  },
+  "IPv4Addresses": [
+    {
+      "Address": "192.168.1.100",
+      "SubnetMask": "255.255.255.0",
+      "AddressOrigin": "Static",
+      "Gateway": "192.168.1.1"
+    }
+  ],
+  "StatelessAddressAutoConfig": {
+    "IPv4AutoConfigEnabled": false,
+    "IPv6AutoConfigEnabled": true
+  },
+  "IPv4StaticAddresses": [
+    {
+      "Address": "192.168.1.100",
+      "SubnetMask": "255.255.255.0",
+      "Gateway": "192.168.1.1"
+    }
+  ],
+  "IPv6StaticAddresses": [
+    {
+      "Address": "2001:db8::1",
+      "PrefixLength": 64
+    },
+    {
+      "Address": "2001:db8::2",
+      "PrefixLength": 64
+    },
+    {
+      "Address": "2001:db8::3",
+      "PrefixLength": 64
+    },
+    {
+      "Address": "2001:db8::4",
+      "PrefixLength": 64
+    },
+    {
+      "Address": "2001:db8::5",
+      "PrefixLength": 64
+    }
+  ],
+  "IPv6StaticDefaultGateways": [],
+  "IPv6DefaultGateway": null,
+  "IPv6Addresses": [
+    {
+      "Address": "2001:db8::1",
+      "PrefixLength": 64,
+      "AddressOrigin": "LinkLocal",
+      "AddressState": "Preferred"
+    }
+  ],
+  "NameServers": [
+    "0.0.0.0"
+  ],
+  "StaticNameServers": [],
+  "Oem": {
+    "Supermicro": {
+      "@odata.type": "#SmcEthernetInterfaceExtensions.v1_0_2.EthernetInterface",
+      "IPProtocolStatus": "Dual",
+      "DUID": "00:11:22:33:44:55:00:11:22:33:44:55:55:60:EC:8D",
+      "LANInterface": "Failover",
+      "LANInterface@Redfish.AllowableValues": [
+        "Dedicated",
+        "Shared",
+        "Failover"
+      ],
+      "ActiveInterface": "Dedicated"
+    }
+  },
+  "@odata.etag": "\"ea7f2740c2a1c88b33f7162aa47b3e79\""
+}

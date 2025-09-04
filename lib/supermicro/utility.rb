@@ -6,43 +6,79 @@ require 'colorize'
 module Supermicro
   module Utility
     def sel_log
-      response = authenticated_request(:get, "/redfish/v1/Managers/1/LogServices/SEL/Entries?$expand=*($levels=1)")
+      # Supermicro uses Systems/1/LogServices/Log1/Entries for system health event logs
+      # Try Systems log first (health events)
+      response = authenticated_request(:get, "/redfish/v1/Systems/1/LogServices/Log1/Entries?$expand=*($levels=1)")
       
       if response.status == 200
-        begin
-          data = JSON.parse(response.body)
-          
-          entries = data["Members"]&.map do |entry|
-            {
-              "id" => entry["Id"],
-              "name" => entry["Name"],
-              "created" => entry["Created"],
-              "severity" => entry["Severity"],
-              "message" => entry["Message"],
-              "message_id" => entry["MessageId"],
-              "sensor_type" => entry["SensorType"],
-              "sensor_number" => entry["SensorNumber"]
-            }
-          end || []
-          
-          return entries.sort_by { |e| e["created"] || "" }.reverse
-        rescue JSON::ParserError
-          raise Error, "Failed to parse SEL log response: #{response.body}"
+        debug "Retrieved system health event logs", 2, :green
+        return parse_log_entries(response)
+      elsif response.status == 404
+        # Fallback to Manager logs (maintenance events)
+        debug "Systems log not found, trying Manager logs", 2, :yellow
+        response = authenticated_request(:get, "/redfish/v1/Managers/1/LogServices/Log1/Entries?$expand=*($levels=1)")
+        
+        if response.status == 200
+          debug "Retrieved manager maintenance logs", 2, :green
+          return parse_log_entries(response)
+        elsif response.status == 404
+          debug "No log services available on this system", 1, :yellow
+          return []
         end
-      else
-        raise Error, "Failed to get SEL log. Status code: #{response.status}"
+      end
+      
+      if response.status != 200
+        debug "Failed to get system logs. Status code: #{response.status}", 1, :yellow
+        return []
       end
     end
+    
+    private
+    
+    def parse_log_entries(response)
+      data = JSON.parse(response.body)
+      
+      entries = data["Members"]&.map do |entry|
+        {
+          "id" => entry["Id"],
+          "name" => entry["Name"],
+          "created" => entry["Created"],
+          "severity" => entry["Severity"],
+          "message" => entry["Message"],
+          "message_id" => entry["MessageId"],
+          "sensor_type" => entry["SensorType"],
+          "sensor_number" => entry["SensorNumber"]
+        }
+      end || []
+      
+      return entries.sort_by { |e| e["created"] || "" }.reverse
+    rescue JSON::ParserError
+      debug "Failed to parse log response", 1, :yellow
+      return []
+    end
+    
+    public
 
     def clear_sel_log
       puts "Clearing System Event Log...".yellow
       
+      # Try to clear System health logs first
       response = authenticated_request(
         :post,
-        "/redfish/v1/Managers/1/LogServices/SEL/Actions/LogService.ClearLog",
+        "/redfish/v1/Systems/1/LogServices/Log1/Actions/LogService.ClearLog",
         body: {}.to_json,
         headers: { 'Content-Type': 'application/json' }
       )
+      
+      if response.status == 404
+        # Fallback to Manager logs
+        response = authenticated_request(
+          :post,
+          "/redfish/v1/Managers/1/LogServices/Log1/Actions/LogService.ClearLog",
+          body: {}.to_json,
+          headers: { 'Content-Type': 'application/json' }
+        )
+      end
       
       if response.status.between?(200, 299)
         puts "SEL cleared successfully.".green
