@@ -99,95 +99,120 @@ module Supermicro
     
     public
 
-    def drives
-      all_drives = []
+    def drives(controller_id)
+      # Following natural Redfish pattern - drives are scoped to a controller
+      raise ArgumentError, "Controller ID is required" unless controller_id
       
-      controllers = storage_controllers
+      drives = []
       
-      controllers.each do |controller|
-        controller_id = controller["id"]
-        
-        response = authenticated_request(:get, "/redfish/v1/Systems/1/Storage/#{controller_id}")
-        
-        if response.status == 200
-          begin
-            data = JSON.parse(response.body)
-            
-            if data["Drives"]
-              data["Drives"].each do |drive_ref|
-                drive_path = drive_ref["@odata.id"]
-                drive_response = authenticated_request(:get, drive_path)
+      # Extract just the controller ID if given full path
+      controller_name = controller_id.split('/').last
+      
+      response = authenticated_request(:get, "/redfish/v1/Systems/1/Storage/#{controller_name}")
+      
+      if response.status == 200
+        begin
+          data = JSON.parse(response.body)
+          
+          if data["Drives"]
+            data["Drives"].each do |drive_ref|
+              drive_path = drive_ref["@odata.id"]
+              drive_response = authenticated_request(:get, drive_path)
+              
+              if drive_response.status == 200
+                drive_data = JSON.parse(drive_response.body)
                 
-                if drive_response.status == 200
-                  drive_data = JSON.parse(drive_response.body)
-                  
-                  all_drives << {
-                    "id" => drive_data["Id"],
-                    "name" => drive_data["Name"],
-                    "serial" => drive_data["SerialNumber"],
-                    "manufacturer" => drive_data["Manufacturer"],
-                    "model" => drive_data["Model"],
-                    "revision" => drive_data["Revision"],
-                    "capacity_bytes" => drive_data["CapacityBytes"],
-                    "speed_gbps" => drive_data["CapableSpeedGbs"] || drive_data["NegotiatedSpeedGbs"],
-                    "rotation_speed_rpm" => drive_data["RotationSpeedRPM"],
-                    "media_type" => drive_data["MediaType"],
-                    "protocol" => drive_data["Protocol"],
-                    "health" => drive_data.dig("Status", "Health") || "N/A",
-                    "temperature_celsius" => drive_data.dig("Oem", "Supermicro", "Temperature"),
-                    "failure_predicted" => drive_data["FailurePredicted"],
-                    "life_left_percent" => drive_data["PredictedMediaLifeLeftPercent"],
-                    "controller" => controller_id
-                  }
-                end
-              end
-            end
-          rescue JSON::ParserError
-            debug "Failed to parse storage data for controller #{controller_id}", 1, :yellow
-          end
-        end
-      end
-      
-      return all_drives
-    end
-
-    def volumes
-      all_volumes = []
-      
-      controllers = storage_controllers
-      
-      controllers.each do |controller|
-        controller_id = controller["id"]
-        
-        response = authenticated_request(:get, "/redfish/v1/Systems/1/Storage/#{controller_id}/Volumes")
-        
-        if response.status == 200
-          begin
-            data = JSON.parse(response.body)
-            
-            if data["Members"]
-              data["Members"].each do |volume|
-                all_volumes << {
-                  "id" => volume["Id"],
-                  "name" => volume["Name"],
-                  "capacity_bytes" => volume["CapacityBytes"],
-                  "capacity_gb" => (volume["CapacityBytes"].to_f / 1_000_000_000).round(2),
-                  "volume_type" => volume["VolumeType"],
-                  "raid_type" => volume["RAIDType"],
-                  "status" => volume.dig("Status", "Health") || "N/A",
-                  "controller" => controller_id,
-                  "encrypted" => volume["Encrypted"],
-                  "optimum_io_size_bytes" => volume["OptimumIOSizeBytes"]
+                drives << {
+                  "id" => drive_data["Id"],
+                  "name" => drive_data["Name"],
+                  "serial" => drive_data["SerialNumber"],
+                  "manufacturer" => drive_data["Manufacturer"],
+                  "model" => drive_data["Model"],
+                  "revision" => drive_data["Revision"],
+                  "capacity_bytes" => drive_data["CapacityBytes"],
+                  "capacity_gb" => (drive_data["CapacityBytes"].to_f / (1000**3)).round(2),
+                  "speed_gbps" => drive_data["CapableSpeedGbs"] || drive_data["NegotiatedSpeedGbs"],
+                  "rotation_speed_rpm" => drive_data["RotationSpeedRPM"],
+                  "media_type" => drive_data["MediaType"],
+                  "protocol" => drive_data["Protocol"],
+                  "status" => drive_data.dig("Status", "Health") || "N/A",
+                  "health" => drive_data.dig("Status", "Health") || "N/A",
+                  "temperature_celsius" => drive_data.dig("Oem", "Supermicro", "Temperature"),
+                  "failure_predicted" => drive_data["FailurePredicted"],
+                  "life_left_percent" => drive_data["PredictedMediaLifeLeftPercent"],
+                  "certified" => drive_data.dig("Oem", "Supermicro", "Certified"),
+                  "@odata.id" => drive_data["@odata.id"]
                 }
               end
             end
-          rescue JSON::ParserError
-            debug "Failed to parse volumes data for controller #{controller_id}", 1, :yellow
           end
+        rescue JSON::ParserError
+          debug "Failed to parse storage data for controller #{controller_name}", 1, :yellow
         end
+      else
+        raise Error, "Failed to get drives for controller #{controller_name}. Status: #{response.status}"
       end
       
-      return all_volumes
+      return drives
+    end
+
+    def volumes(controller_id)
+      # Following natural Redfish pattern - volumes are scoped to a controller
+      raise ArgumentError, "Controller ID is required" unless controller_id
+      
+      volumes = []
+      
+      # Extract just the controller ID if given full path
+      controller_name = controller_id.split('/').last
+      
+      response = authenticated_request(:get, "/redfish/v1/Systems/1/Storage/#{controller_name}/Volumes")
+      
+      if response.status == 200
+        begin
+          data = JSON.parse(response.body)
+          
+          if data["Members"]
+            data["Members"].each do |volume_ref|
+              # Check if it's a reference or the actual volume data
+              if volume_ref["@odata.id"]
+                # It's a reference, fetch the volume
+                volume_path = volume_ref["@odata.id"]
+                volume_response = authenticated_request(:get, volume_path)
+                
+                if volume_response.status == 200
+                  volume = JSON.parse(volume_response.body)
+                else
+                  next
+                end
+              else
+                # It's the actual volume data
+                volume = volume_ref
+              end
+              
+              volumes << {
+                "id" => volume["Id"],
+                "name" => volume["Name"],
+                "capacity_bytes" => volume["CapacityBytes"],
+                "capacity_gb" => (volume["CapacityBytes"].to_f / (1000**3)).round(2),
+                "volume_type" => volume["VolumeType"],
+                "raid_type" => volume["RAIDType"],
+                "status" => volume.dig("Status", "Health") || "N/A",
+                "health" => volume.dig("Status", "Health") || "N/A",
+                "encrypted" => volume["Encrypted"],
+                "optimum_io_size_bytes" => volume["OptimumIOSizeBytes"],
+                "@odata.id" => volume["@odata.id"]
+              }
+            end
+          end
+        rescue JSON::ParserError
+          debug "Failed to parse volumes data for controller #{controller_name}", 1, :yellow
+        end
+      else
+        # Some controllers may not have volumes endpoint
+        debug "No volumes endpoint for controller #{controller_name} (Status: #{response.status})", 2, :yellow
+      end
+      
+      return volumes
     end
 
     def storage_summary
@@ -206,7 +231,13 @@ module Supermicro
         end
       end
       
-      all_drives = drives
+      # Get all drives from all controllers
+      all_drives = []
+      controllers.each do |controller|
+        controller_drives = drives(controller["@odata.id"] || "/redfish/v1/Systems/1/Storage/#{controller['id']}")
+        all_drives.concat(controller_drives) if controller_drives
+      end
+      
       puts "\nPhysical Drives:".cyan
       all_drives.each do |drive|
         puts "  #{drive['name']} (#{drive['id']})".yellow
@@ -220,7 +251,13 @@ module Supermicro
         end
       end
       
-      all_volumes = volumes
+      # Get all volumes from all controllers
+      all_volumes = []
+      controllers.each do |controller|
+        controller_volumes = volumes(controller["@odata.id"] || "/redfish/v1/Systems/1/Storage/#{controller['id']}")
+        all_volumes.concat(controller_volumes) if controller_volumes
+      end
+      
       if all_volumes.any?
         puts "\nVolumes:".cyan
         all_volumes.each do |volume|
