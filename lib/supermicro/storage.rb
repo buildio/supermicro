@@ -30,7 +30,13 @@ module Supermicro
             controller_data = {
               "id" => controller["Id"],
               "name" => controller["Name"],
+              # Extract model from first StorageController entry
+              "model" => controller.dig("StorageControllers", 0, "Model") || controller["Name"],
+              "firmware_version" => controller.dig("StorageControllers", 0, "FirmwareVersion"),
               "status" => controller.dig("Status", "Health") || "N/A",
+              "drives_count" => controller["Drives"]&.size || 0,
+              "@odata.id" => controller["@odata.id"],
+              # Include full storage controller info for reference
               "storage_controllers" => controller["StorageControllers"]&.map { |sc|
                 {
                   "name" => sc["Name"],
