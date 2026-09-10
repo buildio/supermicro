@@ -78,7 +78,8 @@ module Supermicro
     end
 
     # Set boot override for next boot
-    def set_boot_override(target, enabled: "Once", mode: nil)
+    def set_boot_override(target, persistence: nil, mode: nil)
+      persistence = "Once" unless persistence
       # Validate target against allowed values
       boot_data = boot
       valid_targets = boot_data["allowed_override_targets"]
@@ -88,11 +89,11 @@ module Supermicro
         raise Error, "Invalid boot target: #{target}"
       end
       
-      debug "Setting boot override to #{target} (#{enabled})..."
+      debug "Setting boot override to #{target} (#{persistence})..."
       
       body = {
         "Boot" => {
-          "BootSourceOverrideEnabled" => enabled,  # Disabled/Once/Continuous
+          "BootSourceOverrideEnabled" => persistence,  # Disabled/Once/Continuous
           "BootSourceOverrideTarget" => target     # None/Pxe/Hdd/Cd/etc
         }
       }
@@ -236,25 +237,25 @@ module Supermicro
     end
 
     # Convenience methods for common boot targets
-    def boot_to_pxe(enabled: "Once", mode: nil)
-      set_boot_override("Pxe", enabled: enabled, mode: mode)
+    def boot_to_pxe(persistence: nil, mode: nil)
+      set_boot_override("Pxe", persistence: persistence, mode: mode)
     end
 
-    def boot_to_disk(enabled: "Once", mode: nil)
-      set_boot_override("Hdd", enabled: enabled, mode: mode)
+    def boot_to_disk(persistence: nil, mode: nil)
+      set_boot_override("Hdd", persistence: persistence, mode: mode)
     end
 
-    def boot_to_cd(enabled: "Once", mode: "UEFI")
+    def boot_to_cd(persistence: nil, mode: "UEFI")
       # Always use UEFI mode for CD boot since we're booting UEFI media
-      set_boot_override("Cd", enabled: enabled, mode: mode)
+      set_boot_override("Cd", persistence: persistence, mode: mode)
     end
 
-    def boot_to_usb(enabled: "Once", mode: nil)
-      set_boot_override("Usb", enabled: enabled, mode: mode)
+    def boot_to_usb(persistence: nil, mode: nil)
+      set_boot_override("Usb", persistence: persistence, mode: mode)
     end
 
-    def boot_to_bios_setup(enabled: "Once", mode: nil)
-      set_boot_override("BiosSetup", enabled: enabled, mode: mode)
+    def boot_to_bios_setup(persistence: nil, mode: nil)
+      set_boot_override("BiosSetup", persistence: persistence, mode: mode)
     end
     
     # Set one-time boot to virtual media (CD)
@@ -288,7 +289,7 @@ module Supermicro
       end
       
       # Now try the standard boot override - this often works after remount
-      result = boot_to_cd(enabled: "Once")
+      result = boot_to_cd(persistence: 'Once')
       
       if result
         debug "One-time boot to virtual media configured", 1, :green
