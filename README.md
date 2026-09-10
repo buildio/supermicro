@@ -185,6 +185,18 @@ Tested with:
 - Redfish API version 1.11.0
 - Ruby 3.0+
 
+`activesupport` below 8.1 and `json` 3 cannot be used together: activesupport's
+JSON encoder calls `JSON.generate(..., quirks_mode: true)`, and json 3 removed
+that keyword, so any `hash.to_json` raises `ArgumentError: unknown keyword:
+quirks_mode`. This is not specific to this gem — it bites anything that loads
+`active_support/core_ext` — but supermicro depends on activesupport, so pick
+one of:
+
+- activesupport >= 8.1 with json 3, or
+- activesupport 7.x with json 2.
+
+CI covers both ends.
+
 ## Differences from iDRAC
 
 While the API is similar to the iDRAC gem, there are some Supermicro-specific differences:
